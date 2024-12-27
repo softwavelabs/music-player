@@ -1,3 +1,9 @@
+# MacOS
+.DS_Store
+
+# Build
+build
+
 # C++ objects and libs
 *.slo
 *.lo
