@@ -57,7 +57,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.0
-
+import MusicPlayer 1.0
 
 ApplicationWindow {
     id: window
@@ -65,7 +65,29 @@ ApplicationWindow {
     height: 720
     visible: true
     title: "Music Player"
+
     Material.accent: "#222222"
+
+    MusicPlayer {
+        id: musicPlayer
+        onFilesChanged: {
+            currentDirectoryPath.text = musicPlayer.m_directoryPath
+            if (musicPlayer.m_files && musicPlayer.m_files.length > 0) {
+
+                filesListView.model.clear();
+
+                for (var i = 0; i < musicPlayer.m_files.length; i++) {
+                    var file = musicPlayer.m_files[i];
+                    filesListView.model.append({
+                        name: file
+                    });
+                    // console.log("Added file " + i + ": " + file);
+                }
+            } else {
+                console.log("No files found or m_files is undefined");
+            }
+        }
+    }
 
     background: Rectangle {
         id: backgroundColor
@@ -151,7 +173,7 @@ ApplicationWindow {
                     id: albumCover
                     anchors.fill: parent
                     fillMode: Image.PreserveAspectCrop
-                    source: "images/Selected_Ambient_Works_85-92.png"
+                    source: "images/Selected_Ambient_Works_85-92.png" // for now
                 }
             }
 
@@ -192,7 +214,7 @@ ApplicationWindow {
 
                 Label {
                     id: songNameLabel
-                    text: "Aphex Twin - Xtal"
+                    text: musicPlayer.getFileName
                     font.pixelSize: 18
                     x: 100
 
@@ -262,10 +284,14 @@ ApplicationWindow {
 
             RowLayout {
                 TextField {
+                    id: currentDirectoryPath
                     Layout.fillWidth: true
                 }
                 Button {
                     icon.name: "folder"
+                    onClicked: {
+                        var files = musicPlayer.getAllFilesFromDirectory();
+                    }
                 }
             }
 
@@ -277,24 +303,22 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
+
                 ListView {
                     id: filesListView
                     clip: true
                     anchors.fill: parent
                     model: ListModel {
-                        Component.onCompleted: {
-                            for (var i = 0; i < 100; ++i) {
-                                append({
-                                   author: "Author",
-                                   album: "Album",
-                                   track: "Track 0" + (i % 9 + 1),
-                                });
-                            }
-                        }
+
                     }
+
                     delegate: ItemDelegate {
-                        required property var model
-                        text: model.author + " - " + model.album + " - " + model.track
+                        text: model.name
+                        width: filesListView.width
+                        onClicked: {
+                            musicPlayer.setFileName(model.name);
+                            musicPlayer.play();
+                        }
                     }
 
                     ScrollBar.vertical: ScrollBar {

@@ -1,76 +1,83 @@
-/****************************************************************************
-**
-** Copyright (C) 2017 The Qt Company Ltd.
-** Copyright (C) 2024 Softwave Labs.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit, modified by Softwave Labs.
-**
-** @author Anathonic <anathonic@protonmail.com>
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+#include "musicplayer.h"
 
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QSettings>
-#include <QIcon>
-
-int main(int argc, char *argv[])
+void MusicPlayer::setFileName(const QString &fileName)
 {
-    QGuiApplication::setApplicationName("Music Player");
-    QGuiApplication::setOrganizationName("QtProject");
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-
-    QGuiApplication app(argc, argv);
-
-    QIcon::setThemeName("musicplayer");
-
-    QQmlApplicationEngine engine;
-    engine.load(QUrl("qrc:/musicplayer.qml"));
-    if (engine.rootObjects().isEmpty())
-        return -1;
-
-    return app.exec();
+    if (m_fileName != fileName) {
+        m_fileName = fileName;
+        emit fileNameChanged(m_fileName);
+    }
 }
+
+void MusicPlayer::setDirectoryPath(const QString &directoryPath)
+{
+    if (m_directoryPath != directoryPath) {
+        m_directoryPath = directoryPath;
+        emit directoryPathChanged(m_directoryPath);
+    }
+}
+
+void MusicPlayer::play()
+{
+
+}
+
+void MusicPlayer::setPlaybackSpeed()
+{
+    switch (m_speed) {
+    case Speed_0_5: m_playbackSpeed = 0.5f; break;
+    case Speed_0_75: m_playbackSpeed = 0.75f; break;
+    case Speed_1: m_playbackSpeed = 1.0f; break;
+    case Speed_1_25: m_playbackSpeed = 1.25f; break;
+    case Speed_1_5: m_playbackSpeed = 1.5f; break;
+    case Speed_1_75: m_playbackSpeed = 1.75f; break;
+    case Speed_2: m_playbackSpeed = 2.0f; break;
+    }
+    m_mediaPlayer->setPlaybackRate(m_playbackSpeed);
+}
+
+void MusicPlayer::setPlaybackVolume()
+{
+
+}
+
+void MusicPlayer::setPlaybackCurrentTime()
+{
+
+}
+
+void MusicPlayer::getAllFilesFromDirectory()
+{
+    QStringList fileNames;
+
+    QString dirPath;
+
+    dirPath = QFileDialog::getExistingDirectory(
+        nullptr,
+        "Select Folder",
+        "/Users/anath/Music/Music/Media.localized/Music", // my path with music, for now, to simpler testing
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+        );
+
+    if (!dirPath.isEmpty()) {
+        QDir dir(dirPath);
+        fileNames = dir.entryList(QStringList() << "*.mp3" << "*.wav" << "*.flac", QDir::Files);
+        qDebug() << "Files from folder:" << fileNames;
+    }
+
+    setDirectoryPath(dirPath);
+    m_files = fileNames;
+    emit filesChanged();
+
+}
+
+QStringList MusicPlayer::getFiles() const { return m_files; }
+
+QString MusicPlayer::getFileName() const { return m_fileName; }
+
+QString MusicPlayer::getDirectoryPath() const { return m_directoryPath; }
+
+float MusicPlayer::getPlaybackSpeed() { return m_playbackSpeed; }
+
+float MusicPlayer::getPlaybackVolume() { return m_playbackVolume; }
+
+double MusicPlayer::getPlaybackCurrentTime() { return m_playbackCurrentTime; }
