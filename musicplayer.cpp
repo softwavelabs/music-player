@@ -16,33 +16,98 @@ void MusicPlayer::setDirectoryPath(const QString &directoryPath)
     }
 }
 
+
 void MusicPlayer::play()
 {
-
-}
-
-void MusicPlayer::setPlaybackSpeed()
-{
-    switch (m_speed) {
-    case Speed_0_5: m_playbackSpeed = 0.5f; break;
-    case Speed_0_75: m_playbackSpeed = 0.75f; break;
-    case Speed_1: m_playbackSpeed = 1.0f; break;
-    case Speed_1_25: m_playbackSpeed = 1.25f; break;
-    case Speed_1_5: m_playbackSpeed = 1.5f; break;
-    case Speed_1_75: m_playbackSpeed = 1.75f; break;
-    case Speed_2: m_playbackSpeed = 2.0f; break;
+    if (m_files.isEmpty()) {
+        qDebug() << "No files to play.";
+        return;
     }
+
+    if (m_fileName.isEmpty()) {
+        setFileName(m_files.first());
+    }
+
+    QString absolutePath = QDir(m_directoryPath).filePath(m_fileName);
+
+    if (!QFile::exists(absolutePath)) {
+        qDebug() << "File does not exist: " << absolutePath;
+        return;
+    }
+
+    m_mediaPlayer->setSource(QUrl::fromLocalFile(absolutePath));
+    m_mediaPlayer->play();
+    m_isMusicPlaying = true;
+
+    qDebug() << "Playing: " << absolutePath;
+}
+
+
+void MusicPlayer::pause()
+{
+    if (m_isMusicPlaying) {
+        m_mediaPlayer->pause();
+        m_isMusicPlaying = false;
+        qDebug() << "Music paused.";
+    } else {
+        m_mediaPlayer->play();
+        m_isMusicPlaying = true;
+        qDebug() << "Music playing";
+    }
+}
+
+void MusicPlayer::stop()
+{
+    if (m_isMusicPlaying) {
+        m_mediaPlayer->stop();
+        m_isMusicPlaying = false;
+        qDebug() << "Music stopped.";
+    }
+}
+
+void MusicPlayer::next()
+{
+    int currentIndex = m_files.indexOf(m_fileName);
+    if (currentIndex != -1 && currentIndex < m_files.size() - 1) {
+        setFileName(m_files[currentIndex + 1]);
+        play();
+    } else {
+        qDebug() << "No next file.";
+    }
+}
+
+void MusicPlayer::previous()
+{
+    int currentIndex = m_files.indexOf(m_fileName);
+    if (currentIndex > 0) {
+        setFileName(m_files[currentIndex - 1]);
+        play();
+    } else {
+        qDebug() << "No previous file.";
+    }
+}
+
+void MusicPlayer::setPlaybackSpeed(float speed)
+{
+    m_playbackSpeed = speed;
     m_mediaPlayer->setPlaybackRate(m_playbackSpeed);
+    emit playbackSpeedChanged(m_playbackSpeed);
 }
 
-void MusicPlayer::setPlaybackVolume()
+void MusicPlayer::setPlaybackVolume(float volume)
 {
-
+    m_playbackVolume = volume;
+    if (m_audioOutput) {
+        m_audioOutput->setVolume(m_playbackVolume);
+    }
+    emit playbackVolumeChanged(m_playbackVolume);
 }
 
-void MusicPlayer::setPlaybackCurrentTime()
+void MusicPlayer::setPlaybackCurrentTime(double time)
 {
-
+    m_playbackCurrentTime = time;
+    m_mediaPlayer->setPosition(static_cast<qint64>(m_playbackCurrentTime * 1000));
+    emit playbackCurrentTimeChanged(m_playbackCurrentTime);
 }
 
 void MusicPlayer::getAllFilesFromDirectory()
@@ -67,7 +132,6 @@ void MusicPlayer::getAllFilesFromDirectory()
     setDirectoryPath(dirPath);
     m_files = fileNames;
     emit filesChanged();
-
 }
 
 QStringList MusicPlayer::getFiles() const { return m_files; }

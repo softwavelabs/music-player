@@ -63,8 +63,6 @@ int main(int argc, char *argv[])
 {
     QGuiApplication::setApplicationName("Music Player");
     QGuiApplication::setOrganizationName("QtProject");
-    // QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    // QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     QApplication app(argc, argv);
 
     QIcon::setThemeName("musicplayer");

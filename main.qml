@@ -227,7 +227,7 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignHCenter
 
                 RoundButton {
-                    id: myRoundButton
+                    id: shuffleButton
                     icon.name: "shuffle"
                     icon.width: 32
                     icon.height: 32
@@ -236,16 +236,19 @@ ApplicationWindow {
                     icon.name: "previous"
                     icon.width: 32
                     icon.height: 32
+                    onClicked: musicPlayer.previous()
                 }
                 RoundButton {
                     icon.name: "pause"
                     icon.width: 32
                     icon.height: 32
+                    onClicked: musicPlayer.pause()
                 }
                 RoundButton {
                     icon.name: "next"
                     icon.width: 32
                     icon.height: 32
+                    onClicked: musicPlayer.next()
                 }
                 RoundButton {
                     icon.name: "repeat"
