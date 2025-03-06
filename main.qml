@@ -135,11 +135,14 @@ ApplicationWindow {
             Dial {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 50
+                value: musicPlayer.playbackVolume
+                onValueChanged: {
+                        musicPlayer.setPlaybackVolume(value)
+                }
             }
 
             Label {
                 text: "Volume"
-
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 12
             }
@@ -152,7 +155,10 @@ ApplicationWindow {
                 from: 0.5
                 to: 2
                 stepSize: 0.25
-                value: 1.0
+                value: musicPlayer.playbackSpeed
+                onValueChanged: {
+                    musicPlayer.setPlaybackSpeed(value)
+                }
             }
             Text {
                 Layout.alignment: Qt.AlignCenter

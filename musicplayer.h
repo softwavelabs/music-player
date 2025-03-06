@@ -24,8 +24,8 @@ class MusicPlayer : public QObject
 
 public:
     explicit MusicPlayer(QObject *parent = nullptr) : QObject(parent), m_mediaPlayer(new QMediaPlayer(this)) {
-        QAudioOutput *audioOutput = new QAudioOutput();
-        m_mediaPlayer->setAudioOutput(audioOutput);
+        m_audioOutput = new QAudioOutput();
+        m_mediaPlayer->setAudioOutput(m_audioOutput);
     }
     ~MusicPlayer() {}
 
@@ -48,8 +48,8 @@ public:
 
 
 
-    void setPlaybackSpeed(float speed);
-    void setPlaybackVolume(float volume);
+    Q_INVOKABLE void setPlaybackSpeed(float speed);
+    Q_INVOKABLE void setPlaybackVolume(float volume);
     void setPlaybackCurrentTime(double time);
     void setDirectoryPath(const QString &directoryPath);
     Q_INVOKABLE void setFileName(const QString &fileName);
@@ -84,8 +84,8 @@ private:
     QAudioOutput *m_audioOutput;
 
     bool m_isMusicPlaying;
-    float m_playbackSpeed;
-    float m_playbackVolume;
+    float m_playbackSpeed = 1;
+    float m_playbackVolume = 0.5;
     double m_playbackCurrentTime;
 };
 
