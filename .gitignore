@@ -1,13 +1,20 @@
-# MacOS
+# macOS
+
 .DS_Store
 
-# Build
-build
+# Build directories
 
-# C++ objects and libs
+build/
+build-*/
+debug/
+release/
+
+# C++ objects and libraries
+
 *.slo
 *.lo
 *.o
+*.obj
 *.a
 *.la
 *.lai
@@ -16,45 +23,68 @@ build
 *.dll
 *.dylib
 
-# Qt-es
+# Executables
+
+*.exe
+
+# macOS application bundles
+
+*.app
+
+# Qt
+
 object_script.*.Release
 object_script.*.Debug
 *_plugin_import.cpp
+
 /.qmake.cache
 /.qmake.stash
+
 *.pro.user
 *.pro.user.*
 *.qbs.user
 *.qbs.user.*
+*.qmlproject.user
+*.qmlproject.user.*
+*.autosave
+
 *.moc
 moc_*.cpp
 moc_*.h
+moc_predefs.h
+
 qrc_*.cpp
 ui_*.h
+
 *.qmlc
 *.jsc
+*_qmlcache.qrc
+
 Makefile*
-*build-*
 *.qm
 *.prl
 
 # Qt unit tests
+
 target_wrapper.*
 
-# QtCreator
-*.autosave
+# Qt Creator
 
-# QtCreator Qml
-*.qmlproject.user
-*.qmlproject.user.*
-
-# QtCreator CMake
-CMakeLists.txt.user*
-
-# QtCreator 4.8< compilation database
-compile_commands.json
-
-# QtCreator local machine specific files for imported projects
 *creator.user*
 
-*_qmlcache.qrc
+# CMake
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeScripts/
+compile_commands.json
+CMakeLists.txt.user*
+
+# Logs and temporary files
+
+*.log
+*.tmp
+*.temp
+*~
+
